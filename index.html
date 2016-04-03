@@ -1,0 +1,63 @@
+ <!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Fun with tables</title>
+    <style>
+    	#tblCalendar tr td {
+    		border: 1px solid #000000;
+    		border-collapse: collapse;
+    		padding: 3px;
+    	}
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  </head>
+  <body>
+   <script>
+   
+
+   	   $(document).ready(function(){
+   	   	$tbl = $('#tblCalendar');
+
+    	$.get("form.json", function(data){
+    		$tr = $("<tr></tr>");
+    		$tr.append($("<td>&nbsp;</td>"));
+    		for(var j = 0; j < data.timeline.length; j++){
+    			$td = $("<td></td>");
+    			$td.html(data.timeline[j].timeItemLabel);
+    			$tr.append($td);
+    		}
+    		$tbl.append($tr);
+
+    		for(var i = 0; i< data.topics.length; i++){
+    			$tr = $('<tr></tr>');
+    			$td = $('<td></td>');
+    			$td.html(data.topics[i].topicLabel);
+
+    			$tr.append($td);
+    			for(var j = 0; j < data.timeline.length; j++){
+    				$td = $("<td></td>");
+            $td.attr('id', data.topics[i].topicID + '_' + data.timeline[j].timeItemID);
+    				$td.html('&nbsp;');
+            $td.click(function(){
+              console.log(event.target.id);
+
+              $txt = $('<input>');
+              $txt.attr('type', 'text');
+              $txt.attr('id', 'txt_' + event.target.id);
+              if(!$(this).find('input').length){
+                console.log("Adding textbox to td");
+                $(this).append($txt);
+              }
+            })
+    				$tr.append($td);
+    			}
+    			$tbl.append($tr);
+    		}
+    	});
+    });
+   </script>
+   <table id="tblCalendar"></table>
+  </body>
+</html>
