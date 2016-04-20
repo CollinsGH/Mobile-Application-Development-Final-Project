@@ -16,8 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-// $(document).delegate("#table_section", "pageinit", function(){
-  $(document).ready(function(){
+$(document).ready(function(){
     $tbl = $('#tblCalendar'); // declares table
         $.getJSON("js/form.json", function(data) { // gets JSON feed from form.json
         
@@ -55,13 +54,18 @@
             $txt = $('<textarea></textarea>');
             $txt.val(getCalendarDataValue(calendarData, data.topics[i].topicID, data.timeline[j].timeItemID));
             $txt.attr('id', 'txt_' + data.topics[i].topicID + '_' + data.timeline[j].timeItemID);
-            
-            $txt.focusout(function(evt){
-                $obj = $('#' + evt.target.id);
-                console.log($obj);
-                console.log(event.target);
-                saveItemData($obj.attr('id'), $obj.val());
-            });
+            // $txt.focusout(function(evt){
+            //     $obj = $('#' + evt.target.id);
+            //     // console.log($obj);
+            //     // console.log(event.target);
+            //     saveItemData($obj.attr('id'), $obj.val());
+            //     $txt.css('display', 'none');
+            //     // if(getCalendarDataValue(calendarData, data.topics[i].topicID, data.timeline[j].timeItemID)){
+            //     // $div.html(getCalendarDataValue(calendarData, data.topics[i].topicID, data.timeline[j].timeItemID));
+            //     //     } else {
+            //     // $div.html("&nbsp")
+            //     // }
+            // });
             $txt.css('display', 'none');
             
             $div = $('<div></div>');
@@ -71,21 +75,43 @@
             } else {
                 $div.html("&nbsp")
             }
-            
+
+            $txt.focusout(function(evt){
+                $obj = $('#' + evt.target.id);
+                // console.log($obj);
+                // console.log(event.target);
+                saveItemData($obj.attr('id'), $obj.val());
+                $txt.css('display', 'none');
+                div_str = $obj.attr('id').replace('txt', 'div');
+                console.log(div_str);
+                console.log($obj.val());
+                $('#' + div_str).html($obj.val());
+                $('#' + div_str).css('display', '');
+            });
+            $txt.css('display', 'none');
+
+            $txt.css('display', 'none');
             $div.click(function(evt){
                 displayEditableText(evt.target.id);
-                //console.log("Clicked");
+                var txt_area = evt.target.id;
+                txt_area = txt_area.replace("div", "txt");
+                console.log(txt_area);
+                $('#' + txt_area).focus();
             });
-
+            
             $td.append($txt);
             $td.append($div);
             $tr.append($td);
         }
             $tbl.append($tr);
         }
-        });             
+        
+        
+        });
+                    
     });
     });
+
     function saveItemData(controlID, val){
         var topicID, timeItemID;
         var idArray = controlID.split('_');
@@ -127,3 +153,46 @@
             }
             
         }
+
+    function saveItemData(controlID, val){
+        var topicID, timeItemID;
+        var idArray = controlID.split('_');
+        var dataToSave = {};
+        if(idArray.length == 3){
+            topicID = idArray[1];
+            timeItemID = idArray[2];
+            
+            dataToSave.topicID = topicID;
+            dataToSave.timeItemID = timeItemID;
+            dataToSave.textValue = val;
+            
+            console.log(dataToSave);
+            // $.post('savecalendarentry.php', dataToSave);
+        }
+    }
+        
+        function getCalendarDataValue(calData, topicID, timeItemID){
+            for(var k = 0; k < calData.caldata.length; k++){
+                if(calData.caldata[k].topicID == topicID && calData.caldata[k].timeItemID == timeItemID){
+                    return calData.caldata[k].textValue;
+                }
+            }
+        }
+        
+        function displayEditableText(controlID){ // why does this only work for 1,1 and 3,3?
+            var idArray = controlID.split('_');
+            // console.log(controlID + " controlID");
+            if(idArray.length == 3){ // prints "div" , "rowID", "colID" 
+                topicID = idArray[1];
+                timeItemID = idArray[2];
+                
+                $div = $('#div_' + topicID + '_' + timeItemID);
+                $txt = $('#txt_' + topicID + '_' + timeItemID);
+
+                $div.css('display', 'none');
+                $txt.css('display', 'block');
+                // console.log(idArray + " " + controlID);
+            }
+            
+        }
+
